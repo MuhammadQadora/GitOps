@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-dns
+  namespace: argocd
+finalizers:
+    # The default behaviour is foreground cascading deletion
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: external-dns
+    repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 7.5.5
+    helm:
+      passCredentials: false
+      releaseName: metrics-server
+      valuesObject:
+        provider: aws
+        serviceAccount:
+          name: external-dns-sa
+          annotations:
+            eks.amazonaws.com/role-arn: arn:aws:iam::933060838752:role/external-dns-pod-role
+        policy: sync
+        txtOwnderId: external-dns
+        podSecurityContext:
+          fsGroup: 65534
+          runAsUser: 0
+        aws:
+          zoneType: public
+          region: ap-northeast-1
+        domainFilters[0]: atech-bot.click
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: kube-system
+  syncPolicy:
+    automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+      prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+      selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+      allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
+    syncOptions:     # Sync options which modifies sync behavior
+    - Validate=true # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
+    - CreateNamespace=false # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+    - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
+    - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation # Only sync out-of-sync resources, rather than applying every object in the application
