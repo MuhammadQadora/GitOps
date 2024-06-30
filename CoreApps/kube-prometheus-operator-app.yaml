@@ -29,7 +29,7 @@ spec:
           additionalDataSources:
           - name: elasticsearch
             type: elasticsearch
-            url: https://elasticsearch-master.elasticsearch
+            url: https://elasticsearch-master.elasticsearch:9200
             basicAuth: true
             basicAuthPassword: elastic123
             basicAuthUser: elastic
