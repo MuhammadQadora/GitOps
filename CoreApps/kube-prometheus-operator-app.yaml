@@ -11,11 +11,15 @@ spec:
   source:
     chart: kube-prometheus-stack
     repoURL: https://prometheus-community.github.io/helm-charts
-    targetRevision: 60.0.0
+    targetRevision: 60.1.0
     helm:
       passCredentials: false
       releaseName: prometheus
       valuesObject:
+        prometheus-windows-exporter:
+          prometheus:
+            monitor:
+              enabled: false
         crds:
           enabled: true
         grafana:
