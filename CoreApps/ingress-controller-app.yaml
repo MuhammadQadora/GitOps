@@ -3,7 +3,7 @@ kind: Application
 metadata:
   name: ingress-controller
   namespace: argocd
-finalizers:
+  finalizers:
     # The default behaviour is foreground cascading deletion
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -20,9 +20,9 @@ spec:
           name: ingress-sa
           annotations:
             eks.amazonaws.com/role-arn: arn:aws:iam::933060838752:role/ingress-controller-role
-          clusterName: mf-cluster
-          vpcId: vpc-04569a5fd7bb1b1a1
-          region: ap-northeast-1
+        clusterName: mf-cluster
+        vpcId: vpc-05336a534c78d4a25
+        region: ap-northeast-1
   destination:
     server: "https://kubernetes.default.svc"
     namespace: kube-system

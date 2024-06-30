@@ -1,0 +1,142 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fluentd
+  namespace: argocd
+  finalizers:
+    # The default behaviour is foreground cascading deletion
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: fluentd
+    repoURL: https://fluent.github.io/helm-charts
+    targetRevision: 0.5.2
+    helm:
+      passCredentials: false
+      releaseName: fluentd
+      valuesObject:
+        metrics:
+          serviceMonitor:
+            enabled: true
+            namespace: fluentd
+        persistence:
+          enabled: false
+          storageClass: "gp2"
+          accessMode: ReadWriteOnce
+          size: 10Gi
+        fileConfigs:
+          01_sources.conf: |-
+            ## logs from podman
+            <source>
+              @type tail
+              @id in_tail_container_logs
+              @label @KUBERNETES
+              path /var/log/containers/*.log
+              pos_file /var/log/fluentd-containers.log.pos
+              tag kubernetes.*
+              read_from_head true
+              <parse>
+                @type multi_format
+                <pattern>
+                  format json
+                  time_key time
+                  time_type string
+                  time_format "%Y-%m-%dT%H:%M:%S.%NZ"
+                  keep_time_key false
+                </pattern>
+                <pattern>
+                  format regexp
+                  expression /^(?<time>.+) (?<stream>stdout|stderr)( (.))? (?<log>.*)$/
+                  time_format '%Y-%m-%dT%H:%M:%S.%NZ'
+                  keep_time_key false
+                </pattern>
+              </parse>
+              emit_unmatched_lines true
+            </source>
+
+            # expose metrics in prometheus format
+            <source>
+              @type prometheus
+              bind 0.0.0.0
+              port 24231
+              metrics_path /metrics
+            </source>
+
+          02_filters.conf: |-
+            <label @KUBERNETES>
+              <match kubernetes.var.log.containers.fluentd**>
+                @type relabel
+                @label @FLUENT_LOG
+              </match>
+
+              # <match kubernetes.var.log.containers.**_kube-system_**>
+              #   @type null
+              #   @id ignore_kube_system_logs
+              # </match>
+
+              <filter kubernetes.**>
+                @type kubernetes_metadata
+                @id filter_kube_metadata
+                skip_labels false
+                skip_container_metadata false
+                skip_namespace_metadata true
+                skip_master_url true
+              </filter>
+
+              <match **>
+                @type relabel
+                @label @DISPATCH
+              </match>
+            </label>
+
+          03_dispatch.conf: |-
+            <label @DISPATCH>
+              <filter **>
+                @type prometheus
+                <metric>
+                  name fluentd_input_status_num_records_total
+                  type counter
+                  desc The total number of incoming records
+                  <labels>
+                    tag ${tag}
+                    hostname ${hostname}
+                  </labels>
+                </metric>
+              </filter>
+
+              <match **>
+                @type relabel
+                @label @OUTPUT
+              </match>
+            </label>
+
+          04_outputs.conf: |-
+            <label @OUTPUT>
+              <match **>
+                @type elasticsearch
+                host "elasticsearch-master.elasticsearch"
+                port 9200
+                scheme https
+                user elastic
+                password elastic123
+                logstash_format true
+                Suppress_Type_Name On
+                ssl_verify false
+                # Don't wait for elastic to start up.
+                verify_es_version_at_startup true
+              </match>
+            </label>
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: fluentd
+  syncPolicy:
+    automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+      prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+      selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+      allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
+    syncOptions:     # Sync options which modifies sync behavior
+    - Validate=true # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
+    - CreateNamespace=true # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+    - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
+    - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation # Only sync out-of-sync resources, rather than applying every object in the application

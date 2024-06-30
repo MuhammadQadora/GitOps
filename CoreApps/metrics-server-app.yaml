@@ -3,7 +3,7 @@ kind: Application
 metadata:
   name: metric-server
   namespace: argocd
-finalizers:
+  finalizers:
     # The default behaviour is foreground cascading deletion
     - resources-finalizer.argocd.argoproj.io
 spec:

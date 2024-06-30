@@ -1,32 +1,27 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cluster-autoscaler
+  name: bot-dev-app
+  # You'll usually want to add your resources to the argocd namespace.
   namespace: argocd
+  # Add this finalizer ONLY if you want these to cascade delete.
   finalizers:
     # The default behaviour is foreground cascading deletion
     - resources-finalizer.argocd.argoproj.io
+    # Alternatively, you can use background cascading deletion
+    # - resources-finalizer.argocd.argoproj.io/background
+  # Add labels to your application object.
 spec:
+  # The project the application belongs to.
   project: default
+  # Source of the application manifests
   source:
-    chart: cluster-autoscaler
-    repoURL: https://kubernetes.github.io/autoscaler
-    targetRevision: 9.37.0
-    helm:
-      passCredentials: false
-      releaseName: cluster-autoscaler
-      valuesObject:
-        autoDiscovery:
-          clusterName: mf-cluster
-        awsRegion: ap-northeast-1
-        rbac:
-          serviceAccount:
-            name: cluster-autoscaler
-            annotations:
-              eks.amazonaws.com/role-arn: arn:aws:iam::933060838752:role/cluster-autoscaler-role
+    repoURL: https://github.com/MuhammadQadora/GitOps.git # Can point to either a Helm chart repo or a git repo.
+    targetRevision: HEAD  # For Helm, this refers to the chart version.
+    path: environments/dev/bot-chart
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: kube-system
+    namespace: dev
   syncPolicy:
     automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
       prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).

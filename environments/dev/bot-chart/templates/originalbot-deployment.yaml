@@ -1,0 +1,105 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-originalbot-deployment
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.deployment.labels }}
+  labels:
+    app: {{ .Release.Name }}-originalbot
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-originalbot
+  replicas: {{ .Values.deployment.replicas | default 1 }}
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.deployment.strategy.maxSurge | default 1 }}
+      maxUnavailable: {{ .Values.deployment.strategy.maxSurge | default 0 }}
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-originalbot
+    spec:
+      serviceAccountName: bot-sa
+      containers:
+      - name: originalbot
+        image: {{ .Values.deployment.image | default "933060838752.dkr.ecr.us-east-1.amazonaws.com/original-bot-dev" }}:{{ .Values.deployment.tag | default "latest" }}
+        resources:
+          {{- with .Values.deployment.resources }}
+          requests:
+            cpu: {{ .requests.cpu | default "1000m"}}
+            memory: {{ .requests.memory | default "1000Mi"}}
+          limits:
+            cpu: {{ .limits.cpu | default "1000m"}}
+            memory: {{ .limits.memory | default "1000Mi"}}
+          {{- end}}
+        livenessProbe:
+          httpGet:
+            port: 5000
+            path: /
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: TELEGRAM_APP_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: appUrl
+        - name: SNS_ARN
+          valueFrom:
+            secretKeyRef:
+              name: secret
+              key: SNS_ARN
+        - name: SERVER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: serverEndpoint
+        - name: SQS_URL
+          valueFrom:
+            secretKeyRef:
+              key: SQS_URL
+              name: secret
+        - name: SNS_URL
+          valueFrom:
+            secretKeyRef:
+              key: SNS_URL
+              name: secret
+        - name: REGION_NAME
+          valueFrom:
+            secretKeyRef:
+              key: REGION_NAME
+              name: secret
+        - name: DYNAMO_TBL
+          valueFrom:
+            secretKeyRef:
+              key: DYNAMO_TBL
+              name: secret
+        - name: GPT_TBL
+          valueFrom:
+            secretKeyRef:
+              key: GPT_TBL
+              name: secret
+        ports:
+        - containerPort: 5000
+          name: bot-http
+      imagePullSecrets:
+          - name: ecr

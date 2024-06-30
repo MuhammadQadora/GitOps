@@ -1,0 +1,8 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: config
+  namespace: {{ .Release.Namespace }}
+data:
+  appUrl: "https://mf.atech-bot.click"
+  serverEndpoint: "https://mf.atech-bot.click/sns_update"

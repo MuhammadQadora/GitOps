@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Release.Name }}-worker-yolov5
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{.Release.Name }}-worker-yolov5
+spec:
+  selector:
+    matchLabels:
+      app: {{.Release.Name }}-worker-yolov5
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.deployment.strategy.maxSurge | default 1}}
+      maxUnavailable: {{ .Values.deployment.strategy.maxUnavailable | default 0}}
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{.Release.Name }}-worker-yolov5
+    spec:
+      serviceAccountName: worker-sa
+      containers:
+      - name: worker-yolov5
+        image: {{ .Values.image | default "933060838752.dkr.ecr.us-east-1.amazonaws.com/yolov5-mf" }}:{{ .Values.tag | default "latest"}}
+        resources:
+          {{- with .Values.deployment.resources}}
+          requests:
+            cpu: {{ .requests.cpu| default "1Gi"}}
+            memory: {{ .requests.memory | default "1000Mi"}}
+          limits:
+            cpu: {{ .limits.cpu | default "2Gi" }}
+            memory: {{ .limits.memory | default "2000Mi"}}
+          {{- end }}
+        env:
+        - name: SNS_ARN
+          valueFrom:
+            secretKeyRef:
+              name: worker-secret
+              key: SNS_ARN
+        - name: SQS_URL
+          valueFrom:
+            secretKeyRef:
+              name: worker-secret
+              key: SQS_URL
+        - name: REGION_NAME
+          valueFrom:
+            secretKeyRef:
+              name: worker-secret
+              key: REGION_NAME
+        - name: DYNAMO_TBL
+          valueFrom:
+            secretKeyRef:
+              name: worker-secret
+              key: DYNAMO_TBL
+      imagePullSecrets:
+        - name: ecr

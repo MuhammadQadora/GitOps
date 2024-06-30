@@ -3,7 +3,7 @@ kind: Application
 metadata:
   name: external-dns
   namespace: argocd
-finalizers:
+  finalizers:
     # The default behaviour is foreground cascading deletion
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -14,7 +14,7 @@ spec:
     targetRevision: 7.5.5
     helm:
       passCredentials: false
-      releaseName: metrics-server
+      releaseName: external-dns
       valuesObject:
         provider: aws
         serviceAccount:

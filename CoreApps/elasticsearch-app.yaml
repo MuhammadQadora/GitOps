@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cluster-autoscaler
+  name: elastic-search
   namespace: argocd
   finalizers:
     # The default behaviour is foreground cascading deletion
@@ -9,24 +9,41 @@ metadata:
 spec:
   project: default
   source:
-    chart: cluster-autoscaler
-    repoURL: https://kubernetes.github.io/autoscaler
-    targetRevision: 9.37.0
+    chart: elasticsearch
+    repoURL: https://helm.elastic.co
+    targetRevision: 8.5.1
     helm:
       passCredentials: false
-      releaseName: cluster-autoscaler
+      releaseName: elastic-search
       valuesObject:
-        autoDiscovery:
-          clusterName: mf-cluster
-        awsRegion: ap-northeast-1
-        rbac:
-          serviceAccount:
-            name: cluster-autoscaler
-            annotations:
-              eks.amazonaws.com/role-arn: arn:aws:iam::933060838752:role/cluster-autoscaler-role
+        createCert: true
+        secret:
+          password: elastic123 #this should not be here !
+        volumeClaimTemplate:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 20Gi
+        ingress:
+          enabled: false
+          annotations:
+             kubernetes.io/ingress.class: alb
+             alb.ingress.kubernetes.io/group.name: my-ingress-group
+             external-dns.alpha.kubernetes.io/hostname: elasticsearch.atech-bot.click
+             external-dns.alpha.kubernetes.io/alias: "true"
+             alb.ingress.kubernetes.io/ssl-redirect: '443'
+             alb.ingress.kubernetes.io/target-type: 'ip'
+             alb.ingress.kubernetes.io/scheme: internet-facing
+             alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-1:933060838752:certificate/2b99790c-bf56-4389-a7de-9f2dea48339f
+          className: "alb"
+          pathtype: ImplementationSpecific
+          hosts:
+            - host: elasticsearch.atech-bot.click
+              paths:
+                - path: /
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: kube-system
+    namespace: elasticsearch
   syncPolicy:
     automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
       prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
@@ -34,6 +51,6 @@ spec:
       allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
     syncOptions:     # Sync options which modifies sync behavior
     - Validate=true # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
-    - CreateNamespace=false # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+    - CreateNamespace=true # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
     - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
     - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation # Only sync out-of-sync resources, rather than applying every object in the application
