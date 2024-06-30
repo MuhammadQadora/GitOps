@@ -19,7 +19,7 @@ spec:
         ingress:
           enabled: true
           className: "alb"
-          pathtype: ImplementationSpecific
+          pathtype: Prefix
           annotations:
             kubernetes.io/ingress.class: alb
             external-dns.alpha.kubernetes.io/hostname: kibana.atech-bot.click
