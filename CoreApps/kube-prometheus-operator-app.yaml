@@ -28,7 +28,7 @@ spec:
             storageClassName: "gp2"
           additionalDataSources:
           - name: elasticsearch
-            type: Elasticsearch
+            type: elasticsearch
             url: https://elasticsearch-master.elasticsearch
             basicAuth: true
             basicAuthPassword: elastic123
