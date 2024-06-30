@@ -26,6 +26,15 @@ spec:
           persistence:
             enabled: true
             storageClassName: "gp2"
+          additionalDataSources:
+          - name: elasticsearch
+            type: Elasticsearch
+            url: https://elasticsearch-master.elasticsearch
+            basicAuth: true
+            basicAuthPassword: elastic123
+            basicAuthUser: elastic
+            jsonData:
+              tlsSkipVerify: true
           ingress:
             enabled: true
             hosts: 
