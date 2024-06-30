@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kibana-app
+  namespace: argocd
+  finalizers:
+    # The default behaviour is foreground cascading deletion
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: kibana
+    repoURL: https://helm.elastic.co
+    targetRevision: 8.5.1
+    helm:
+      passCredentials: false
+      releaseName: kibana
+      valuesObject:
+        ingress:
+          enabled: true
+          className: "alb"
+          pathtype: ImplementationSpecific
+          annotations:
+            kubernetes.io/ingress.class: alb
+            external-dns.alpha.kubernetes.io/hostname: kibana.atech-bot.click
+            external-dns.alpha.kubernetes.io/alias: "true"
+            alb.ingress.kubernetes.io/group.name: my-ingress-group
+            alb.ingress.kubernetes.io/ssl-redirect: '443'
+            alb.ingress.kubernetes.io/target-type: 'ip'
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-1:933060838752:certificate/2b99790c-bf56-4389-a7de-9f2dea48339f
+          hosts:
+            - host: kibana.atech-bot.click
+              paths:
+                - path: /
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: elasticsearch
+  syncPolicy:
+    automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+      prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+      selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+      allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
+    syncOptions:     # Sync options which modifies sync behavior
+    - Validate=true # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
+    - CreateNamespace=false # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+    - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
+    - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation # Only sync out-of-sync resources, rather than applying every object in the application
