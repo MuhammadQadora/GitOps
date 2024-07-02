@@ -35,20 +35,20 @@ spec:
             basicAuthUser: elastic
             jsonData:
               tlsSkipVerify: true
-          ingress:
-            enabled: true
-            hosts: 
-            - mqgrafana.atech-bot.click
-            ingressClassName: alb
-            annotations:
-              kubernetes.io/ingress.class: alb
-              external-dns.alpha.kubernetes.io/hostname: mqgrafana.atech-bot.click
-              external-dns.alpha.kubernetes.io/alias: "true"
-              alb.ingress.kubernetes.io/group.name: my-ingress-group
-              alb.ingress.kubernetes.io/ssl-redirect: '443'
-              alb.ingress.kubernetes.io/target-type: 'ip'
-              alb.ingress.kubernetes.io/scheme: internet-facing
-              alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-1:933060838752:certificate/2b99790c-bf56-4389-a7de-9f2dea48339f
+          # ingress:
+          #   enabled: true
+          #   hosts: 
+          #   - mqgrafana.atech-bot.click
+          #   ingressClassName: alb
+          #   annotations:
+          #     kubernetes.io/ingress.class: alb
+          #     external-dns.alpha.kubernetes.io/hostname: mqgrafana.atech-bot.click
+          #     external-dns.alpha.kubernetes.io/alias: "true"
+          #     alb.ingress.kubernetes.io/group.name: my-ingress-group
+          #     alb.ingress.kubernetes.io/ssl-redirect: '443'
+          #     alb.ingress.kubernetes.io/target-type: 'ip'
+          #     alb.ingress.kubernetes.io/scheme: internet-facing
+          #     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-1:933060838752:certificate/2b99790c-bf56-4389-a7de-9f2dea48339f
   destination:
     server: "https://kubernetes.default.svc"
     namespace: monitoring
