@@ -1,0 +1,29 @@
+# https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kibana-ingress
+  namespace: elasticsearch
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/group.name: my-ingress-group
+    external-dns.alpha.kubernetes.io/hostname: elasticsearch.atech-bot.click
+    external-dns.alpha.kubernetes.io/alias: "true"
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/target-type: 'ip'
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-1:933060838752:certificate/2b99790c-bf56-4389-a7de-9f2dea48339f
+spec:
+  ingressClassName: alb
+  rules:
+  - host: elasticsearch.atech-bot.click
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kibana-kibana
+            port:
+              number: 5601
