@@ -27,6 +27,7 @@ spec:
         app: {{ .Release.Name }}-originalbot
     spec:
       serviceAccountName: bot-sa
+      restartPolicy: Always
       containers:
       - name: originalbot
         image: {{ .Values.deployment.image | default "933060838752.dkr.ecr.us-east-1.amazonaws.com/original-bot" }}:{{ .Values.deployment.tag | default "latest" }}

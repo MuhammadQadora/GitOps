@@ -21,6 +21,7 @@ spec:
         app: {{.Release.Name }}-worker-yolov5
     spec:
       serviceAccountName: worker-sa
+      restartPolicy: Always
       containers:
       - name: worker-yolov5
         image: {{ .Values.image | default "933060838752.dkr.ecr.us-east-1.amazonaws.com/yolov5-mf" }}:{{ .Values.tag | default "latest"}}
