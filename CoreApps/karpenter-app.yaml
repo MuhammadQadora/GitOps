@@ -9,6 +9,7 @@ metadata:
 spec:
   project: default
   source:
+    chart: karpenter
     repoURL: oci://public.ecr.aws/karpenter/karpenter
     targetRevision: 0.37.0
     helm:
