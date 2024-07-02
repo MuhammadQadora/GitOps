@@ -24,6 +24,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: worker-yolov5
+        imagePullPolicy: Always
         image: {{ .Values.image | default "933060838752.dkr.ecr.us-east-1.amazonaws.com/yolov5-mf" }}:{{ .Values.tag | default "latest"}}
         resources:
           {{- with .Values.deployment.resources}}

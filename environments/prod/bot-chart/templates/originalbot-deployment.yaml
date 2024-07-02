@@ -30,6 +30,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: originalbot
+        imagePullPolicy: Always
         image: {{ .Values.deployment.image | default "933060838752.dkr.ecr.us-east-1.amazonaws.com/original-bot" }}:{{ .Values.deployment.tag | default "latest" }}
         resources:
           {{- with .Values.deployment.resources }}
