@@ -1,38 +1,38 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: kibana-app
-  namespace: argocd
-  finalizers:
-    # The default behaviour is foreground cascading deletion
-    - resources-finalizer.argocd.argoproj.io
-spec:
-  project: default
-  source:
-    chart: kibana
-    repoURL: https://helm.elastic.co
-    targetRevision: 8.5.1
-    helm:
-      passCredentials: false
-      releaseName: kibana
-      valuesObject:
-        resources:
-          requests:
-            cpu: "250m"
-            memory: "250Mi"
-          limits:
-            cpu: "1000m"
-            memory: "2Gi"
-  destination:
-    server: "https://kubernetes.default.svc"
-    namespace: elasticsearch
-  syncPolicy:
-    automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
-      prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
-      selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
-      allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
-    syncOptions:     # Sync options which modifies sync behavior
-    - Validate=true # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
-    - CreateNamespace=false # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
-    - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
-    - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation # Only sync out-of-sync resources, rather than applying every object in the application
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: kibana-app
+#   namespace: argocd
+#   finalizers:
+#     # The default behaviour is foreground cascading deletion
+#     - resources-finalizer.argocd.argoproj.io
+# spec:
+#   project: default
+#   source:
+#     chart: kibana
+#     repoURL: https://helm.elastic.co
+#     targetRevision: 8.5.1
+#     helm:
+#       passCredentials: false
+#       releaseName: kibana
+#       valuesObject:
+#         resources:
+#           requests:
+#             cpu: "250m"
+#             memory: "250Mi"
+#           limits:
+#             cpu: "1000m"
+#             memory: "2Gi"
+#   destination:
+#     server: "https://kubernetes.default.svc"
+#     namespace: elasticsearch
+#   syncPolicy:
+#     automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+#       prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+#       selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+#       allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
+#     syncOptions:     # Sync options which modifies sync behavior
+#     - Validate=true # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
+#     - CreateNamespace=false # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+#     - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
+#     - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation # Only sync out-of-sync resources, rather than applying every object in the application
