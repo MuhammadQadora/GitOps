@@ -24,7 +24,7 @@ spec:
             cpu: "1000m"
             memory: "2Gi"
         replicas: 2
-        minimumMasterNodes: 2
+        minimumMasterNodes: 1
         createCert: true
         secret:
           password: elastic123 #this should not be here !
