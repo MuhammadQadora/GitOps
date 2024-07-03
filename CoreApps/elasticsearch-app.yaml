@@ -16,6 +16,15 @@ spec:
       passCredentials: false
       releaseName: elastic-search
       valuesObject:
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "250Mi"
+          limits:
+            cpu: "1000m"
+            memory: "2Gi"
+        replicas: 2
+        minimumMasterNodes: 2
         createCert: true
         secret:
           password: elastic123 #this should not be here !
