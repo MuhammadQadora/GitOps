@@ -16,12 +16,12 @@ spec:
       passCredentials: false
       releaseName: sonarqube
       valuesObject:
+        ingress-nginx:
+          enabled: false
         initSysctl:
-          enabled: true
-          vmMaxMapCount: 262144
-          fsFileMax: 131072
-          nofile: 131072
-          nproc: 8192
+          enabled: false
+        initFs:
+          enabled: false
         resources:
           limits:
             cpu: 800m
