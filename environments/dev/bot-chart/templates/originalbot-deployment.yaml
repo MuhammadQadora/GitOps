@@ -60,6 +60,11 @@ spec:
           failureThreshold: 3
           periodSeconds: 10
         env:
+        - name: TELEGRAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: secret
+              key: TELEGRAM_TOKEN
         - name: TELEGRAM_APP_URL
           valueFrom:
             configMapKeyRef:
