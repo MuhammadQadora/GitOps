@@ -15,6 +15,20 @@ spec:
     helm:
       passCredentials: false
       releaseName: sonarqube
+      valuesObject:
+        initSysctl:
+          enabled: true
+          vmMaxMapCount: 262144
+          fsFileMax: 131072
+          nofile: 131072
+          nproc: 8192
+        resources:
+          limits:
+            cpu: 800m
+            memory: 1000Mi
+          requests:
+            cpu: 400m
+            memory: 250Mi
   destination:
     server: "https://kubernetes.default.svc"
     namespace: sonarqube
