@@ -26,18 +26,8 @@ spec:
       labels:
         app: {{ .Release.Name }}-originalbot
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: topology.kubernetes.io/zone
-                operator: In
-                values:
-                - antarctica-east1
-                - antarctica-west1
-          serviceAccountName: bot-sa
-          restartPolicy: Always
+      serviceAccountName: bot-sa
+      restartPolicy: Always
       containers:
       - name: originalbot
         imagePullPolicy: Always
