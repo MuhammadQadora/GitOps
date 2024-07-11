@@ -23,7 +23,7 @@ spec:
           limits:
             cpu: "1000m"
             memory: "2Gi"
-        replicas: 1
+        replicas: 2
         minimumMasterNodes: 1
         createCert: true
         secret:
