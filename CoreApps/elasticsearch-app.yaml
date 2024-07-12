@@ -16,6 +16,12 @@ spec:
       passCredentials: false
       releaseName: elastic-search
       valuesObject:
+        extraEnvs:
+          - name: ELASTIC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elasticpass
+                key: password
         resources:
           requests:
             cpu: "250m"
@@ -27,7 +33,7 @@ spec:
         minimumMasterNodes: 1
         createCert: true
         secret:
-          password: elastic123 #this should not be here !
+          enabled: false
         volumeClaimTemplate:
           accessModes: ["ReadWriteOnce"]
           resources:
