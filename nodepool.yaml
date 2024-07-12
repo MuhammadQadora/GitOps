@@ -29,7 +29,7 @@ spec:
       requirements:
         - key : "node.kubernetes.io/instance-type"
           operator: In
-          values: ["t3.medium"]
+          values: ["t3.medium","t3.small","t3.micro"]
         - key: "kubernetes.io/arch"
           operator: In
           values: ["amd64"]
