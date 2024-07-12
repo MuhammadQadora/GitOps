@@ -16,12 +16,12 @@ spec:
       passCredentials: false
       releaseName: fluentd
       valuesObject:
-        env:
-          - name: ELASTICSEARCH_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                 name: fluentd
-                 key: password
+        # env:
+        #   - name: ELASTICSEARCH_PASSWORD
+        #     valueFrom:
+        #       secretKeyRef:
+        #          name: fluentd
+        #          key: password
         metrics:
           serviceMonitor:
             enabled: true
