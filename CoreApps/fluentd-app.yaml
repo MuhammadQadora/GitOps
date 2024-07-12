@@ -16,12 +16,12 @@ spec:
       passCredentials: false
       releaseName: fluentd
       valuesObject:
-        # env:
-        #   - name: ELASTICSEARCH_PASSWORD
-        #     valueFrom:
-        #       secretKeyRef:
-        #          name: fluentd
-        #          key: password
+        env:
+          - name: ELASTICSEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                 name: fluentd
+                 key: password
         metrics:
           serviceMonitor:
             enabled: true
@@ -125,7 +125,7 @@ spec:
                 port 9200
                 scheme https
                 user elastic
-                password elastic123
+                password "#{ENV['ELASTICSEARCH_PASSWORD']}"
                 logstash_format true
                 Suppress_Type_Name On
                 ssl_verify false
