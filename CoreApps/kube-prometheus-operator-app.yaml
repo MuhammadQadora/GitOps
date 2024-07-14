@@ -16,6 +16,18 @@ spec:
       passCredentials: false
       releaseName: prometheus
       valuesObject:
+        alertmanager:
+          config:
+            route:
+              receiver: 'telegram'
+              routes:
+              - receiver: 'telegram'
+            receivers:
+            - name: 'telegram'
+              telegram_configs:
+              - api_url: https://api.telegram.org
+                bot_token: 7394141535:AAFXqKcwDG5vf8J-LqzbIxYi_13e4EQpbY4
+                chat_id: 5916399736
         prometheus-windows-exporter:
           prometheus:
             monitor:
@@ -26,15 +38,6 @@ spec:
           persistence:
             enabled: true
             storageClassName: "gp2"
-          additionalDataSources:
-          - name: elasticsearch
-            type: elasticsearch
-            url: https://elasticsearch-master.elasticsearch:9200
-            basicAuth: true
-            basicAuthPassword: elastic123
-            basicAuthUser: elastic
-            jsonData:
-              tlsSkipVerify: true
           # ingress:
           #   enabled: true
           #   hosts: 
