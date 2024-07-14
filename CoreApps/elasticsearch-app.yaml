@@ -20,7 +20,7 @@ spec:
           - name: ELASTIC_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: elasticpass
+                name: elasticsearch-master-credentials
                 key: password
         resources:
           requests:
