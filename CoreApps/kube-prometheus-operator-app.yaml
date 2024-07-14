@@ -16,18 +16,6 @@ spec:
       passCredentials: false
       releaseName: prometheus
       valuesObject:
-        alertmanager:
-          config:
-            route:
-              receiver: 'telegram'
-              routes:
-              - receiver: 'telegram'
-            receivers:
-            - name: 'telegram'
-              telegram_configs:
-              - api_url: https://api.telegram.org
-                bot_token: 7394141535:AAFXqKcwDG5vf8J-LqzbIxYi_13e4EQpbY4
-                chat_id: 5916399736
         prometheus-windows-exporter:
           prometheus:
             monitor:
