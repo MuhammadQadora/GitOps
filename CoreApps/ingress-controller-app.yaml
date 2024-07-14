@@ -21,7 +21,7 @@ spec:
           annotations:
             eks.amazonaws.com/role-arn: arn:aws:iam::933060838752:role/ingress-controller-role
         clusterName: mf-cluster
-        vpcId: vpc-0ef41e46636d21e3d
+        vpcId: vpc-013204e91384183f3
         region: ap-northeast-1
   destination:
     server: "https://kubernetes.default.svc"
