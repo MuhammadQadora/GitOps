@@ -60,6 +60,11 @@ spec:
           failureThreshold: 3
           periodSeconds: 10
         env:
+        - name: FLAGS_TABLE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: secret
+              key: FLAGS_TABLE_NAME
         - name: TELEGRAM_TOKEN
           valueFrom:
             secretKeyRef:
