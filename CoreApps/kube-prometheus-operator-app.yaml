@@ -16,6 +16,11 @@ spec:
       passCredentials: false
       releaseName: prometheus
       valuesObject:
+        alertmanager:
+          alertmanagerSpec:
+            useExistingSecret: true
+            secrets:
+            - custom-alert-config
         prometheus-windows-exporter:
           prometheus:
             monitor:
