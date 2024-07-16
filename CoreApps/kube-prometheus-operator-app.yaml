@@ -16,11 +16,6 @@ spec:
       passCredentials: false
       releaseName: prometheus
       valuesObject:
-        alertmanager:
-          alertmanagerSpec:
-            configSecret:
-              name: custom-config-secret
-              key: alertmanager.yaml
         prometheus-windows-exporter:
           prometheus:
             monitor:
