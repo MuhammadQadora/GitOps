@@ -27,9 +27,9 @@ spec:
       # Operators { In, NotIn, Exists, DoesNotExist, Gt, and Lt } are supported.
       # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#operators
       requirements:
-        - key : "node.kubernetes.io/instance-type"
+        - key : "node.kubernetes.io/instance-category"
           operator: In
-          values: ["t3.medium","t3.large","t3.xlarge"]
+          values: ["t","c","r","m"]
         - key: "kubernetes.io/arch"
           operator: In
           values: ["amd64"]
