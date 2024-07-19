@@ -4,7 +4,6 @@
 #### using the annotations will completely override the current annotations
 ### this does not add to the current annotations !
 
-replicas: 2
 ingress:
   annotations: {}
 
@@ -15,7 +14,7 @@ deployment:
   #### Additional labels to add to the deployment
   labels: {}
   # this defaults to 1 replica
-  replicas: ''
+  replicas: 2
   ## the stratedy for this deployment is of type rollingupdate and should not be changed
   strategy:
     maxSurge: 1
