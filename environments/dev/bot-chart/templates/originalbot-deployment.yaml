@@ -12,7 +12,6 @@ metadata:
     {{- end }}
   {{- end }}
 spec:
-  replicas: {{ .Values.replicas || default 1 }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}-originalbot
