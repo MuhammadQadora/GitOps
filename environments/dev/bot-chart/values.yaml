@@ -3,6 +3,12 @@
 
 #### using the annotations will completely override the current annotations
 ### this does not add to the current annotations !
+hpa:
+  minReplicas: 2
+  maxReplicas: 10
+  cpuUtilization: 70
+  memoryUtilization: "800Mi"
+
 
 ingress:
   annotations: {}
