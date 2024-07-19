@@ -3,6 +3,8 @@
 
 #### using the annotations will completely override the current annotations
 ### this does not add to the current annotations !
+
+replicas: 2
 ingress:
   annotations: {}
 
