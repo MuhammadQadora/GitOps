@@ -9,11 +9,19 @@ ingress:
   ## the default is alb
   ingressClassName: ''
 
+
+hpa:
+  minReplicas: 2
+  maxReplicas: 10
+  cpuUtilization: 70
+  memoryUtilization: "800Mi"
+
+
 deployment:
   #### Additional labels to add to the deployment
   labels: {}
   # this defaults to 1 replica
-  replicas: ''
+  replicas: 2
   ## the stratedy for this deployment is of type rollingupdate and should not be changed
   strategy:
     maxSurge: 1
