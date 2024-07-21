@@ -27,7 +27,7 @@ deployment:
     maxSurge: 1
     maxUnavailable: 0
   image: "933060838752.dkr.ecr.us-east-1.amazonaws.com/original-bot"
-  tag: 1.1.1
+  tag: 1.1.2
   resources:
     requests:
       cpu: 1000m
